@@ -1,0 +1,6 @@
+This is text document 1.
+END_OF_THIS_FILE
+this is text document 2.
+END_OF_THIS_FILE
+This is text document 3.
+END_OF_THIS_FILE
