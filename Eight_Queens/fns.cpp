@@ -2,6 +2,7 @@
 #include <iostream>
 
 int solution_count = 0;
+bool has_solution = false;
 
 bool valid_move(int** board, int row, int col, int size) {
     //Checks for if same piece exist in the same column
@@ -29,6 +30,7 @@ bool valid_move(int** board, int row, int col, int size) {
 void get_solution_chess_boards(int** board, int num_of_total_queens, int num_of_placed_queens) {
     if (num_of_total_queens == num_of_placed_queens) {
         //print a solution board when recursion reaches the end
+        has_solution = true;
         solution_count++;
         std::cout << "Solution: " << solution_count << "\n";
         print_board(board, num_of_total_queens);
@@ -67,4 +69,8 @@ void print_board (int** board, int size) {
         if (i == size - 1) std::cout << "-";
     }
     std::cout << "\n\n";
+}
+
+bool solution_exist() {
+    return has_solution;
 }

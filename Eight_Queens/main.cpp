@@ -17,6 +17,7 @@ int main() {
             board[i][j] = 0;
 
     get_solution_chess_boards(board, num_of_total_queens);
+    if (!solution_exist()) std::cout << "There were no possible board configurations.\n";
 
     return 0;
 }
