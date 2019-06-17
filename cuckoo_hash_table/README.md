@@ -6,6 +6,7 @@ Problem: Creating Cuckoo Hash Table data structure
 Resource: https://www.geeksforgeeks.org/cuckoo-hashing/
 
 Inputs & Outputs:
+
     Example Input 1: {20, 50, 53, 75, 100, 67, 105, 3, 36, 39}
 
     Example Output 1:
@@ -19,6 +20,7 @@ Inputs & Outputs:
         6	20	-	36	50	-	75	-	-	100	-
 
 Approach:
+
     The Cuckoo Hash Table has a basic structure that is described in the resource link.
     The key idea here is that whenever a new item is inserted,
     it would act like a Cuckoo bird, kicking existing item away.
@@ -31,6 +33,7 @@ Approach:
 
 
 Scratch of Pseudo code:
+
     place(KEY, TO INDEX, count, hash function labeled) {
         if count == 0 {
             RETURN ERROR, item is dropped.
