@@ -13,11 +13,10 @@ void start() {
         if (user_guess(tries, random_number)) {
             won = win();
             break;
+        } else if (tries + 1 == 7) {
+            lose(random_number);
         }
         tries++;
-    }
-    if (!won) {
-        lose(random_number);
     }
     end();
 }
