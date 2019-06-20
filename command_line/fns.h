@@ -8,6 +8,7 @@ void user_input();
 void end();
 
 void operate(std::string command);
+void delete_char(std::string &str);
 void print_command_history();
 
 
