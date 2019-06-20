@@ -10,6 +10,8 @@ const int KEY_UP = 183;
 const int KEY_DOWN = 184;
 const int KEY_RIGHT = 185;
 const int KEY_LEFT = 186;
+const int KEY_DEL = 255;
+const int ASCII_CHAR_RANGE = 126;
 
 static struct termios old, New;
 
@@ -63,6 +65,7 @@ char getche(void)
   return getch_(1);
 }
 
+//Modified Code
 int get_key_pressed()
 {
     char c;
@@ -86,7 +89,9 @@ int get_key_pressed()
         return KEY_ENTER;
     } else if (c == 9) {
         return KEY_TAB;
-    } else {
+    } else if (c == 127){
+        return KEY_DEL;
+    }else {
         return static_cast<int>(c);
     }
     return -1;
@@ -114,7 +119,11 @@ void display_key_pressed(int c) {
             case KEY_TAB:
                 std::cout << "TAB.\n";
                 break;
+            case KEY_DEL:
+                std::cout << "DEL.\n";
+                break;
         }
     }
 }
+
 #endif

@@ -1,16 +1,11 @@
-#include "key_press.h"
+#include "../my_library/key_press.h"
 #include <sstream>
 
 int main() {
-    /*
-    std::ostringstream s;
-    s << "Hello        ";
-    std::string string = s.str();
-    std::cout << string << ".";
-    */
 
-    std::string str;
-    std::cout << "Enter your name: ";
-    std::cin >> str;
-    std::cout << str;
+    while (1) {
+        std::cout << "You pressed: ";
+        display_key_pressed(get_key_pressed());
+    }
+
 }
