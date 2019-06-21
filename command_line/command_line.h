@@ -10,6 +10,7 @@ enum Command_Line_Status {
 };
 
 struct Command {
+    std::string command;
     std::string str;
     int index;
     bool is_valid;

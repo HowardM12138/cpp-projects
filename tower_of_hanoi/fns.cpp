@@ -12,7 +12,7 @@ std::string find_the_third_tower_label(std::string first, std::string second) {
 
       towers.erase(towers.begin() + i);
       i--;
-      
+
     }
   }
   return towers.at(0);

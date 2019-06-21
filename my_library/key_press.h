@@ -97,31 +97,26 @@ int get_key_pressed()
     return -1;
 }
 
-void display_key_pressed(int c) {
-    if (c < 128) std::cout << static_cast<char>(c) << "\n";
-    else {
+std::string get_key_pressed_str(int c) {
+    if (c < 128) {
+        std::string s(1, static_cast<char>(c));
+        return s;
+    } else {
         switch (c) {
             case KEY_UP:
-                std::cout << "Up arrow key.\n";
-                break;
+                return "Up arrow key";
             case KEY_DOWN:
-                std::cout << "Down arrow key.\n";
-                break;
+                return "Down arrow key";
             case KEY_RIGHT:
-                std::cout << "Right arrow key.\n";
-                break;
+                return "Right arrow key";
             case KEY_LEFT:
-                std::cout << "Left arrow key.\n";
-                break;
+                return "Left arrow key";
             case KEY_ENTER:
-                std::cout << "ENTER.\n";
-                break;
+                return "ENTER";
             case KEY_TAB:
-                std::cout << "TAB.\n";
-                break;
+                return "TAB";
             case KEY_DEL:
-                std::cout << "DEL.\n";
-                break;
+                return "DEL";
         }
     }
 }

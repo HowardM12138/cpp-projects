@@ -2,8 +2,7 @@
 
 int main() {
 
-    rebuild();
-    user_input();
+    start();
 
     return 0;
 }

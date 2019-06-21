@@ -7,41 +7,49 @@
 
 std::vector<Command> history;
 Command_Line_Status status = OFF;
+const std::string COMMAND_HEADER = "bingxu@bingxu-VirtualBox:~$ ";
 
-void rebuild() {
-    history.clear();
+void start() {
     status = ON;
-    std::cout << "\nCommand line operating.\n";
+    std::cout << "\nCommand line operating.\n\n";
+    user_input();
+}
+
+void reboot() {
+    history.clear();
+    std::cout << "\nrebooting...\n\n";
 }
 
 void end() {
-    std::cout << "Command line terminates.\n";
+    std::cout << "\nCommand line terminated.\n";
     status = OFF;
 }
 
 void user_input() {
     while (status == ON) {
         //init variables to get user input
-        Command command = {"", history.size(), false};  //Holds the entered command from the user
-        std::string trail = "";                         //Holds the trail of string after the insertion point
-        int c;                                          //Holds key board inter, which return as an int
+        Command command = {"", "", history.size(), false};
+        std::string trail = "";
+        int c;
 
-        std::cout << "~$ ";
+        save_command(command);
+
+        std::cout << COMMAND_HEADER;
 
         do {
             c = get_key_pressed();
-
+            //process input charawcter
             process_char_input(c, command, trail);
-            //add command object
-
             //Prints out trail string
             if (trail.size() != 0) {
                 std::cout << trail;
                 for (int i = 0; i < trail.size(); i++) std::cout << "\b";
             }
         } while (c != KEY_ENTER);
-        //operates command afterwards
+        //Save command and operate command
+        command.str += trail;
         std::cout << "\n";
+        save_new_command(command);
         process_command(command);
     }
 }
@@ -69,27 +77,73 @@ void process_char_input(int c, Command &command, std::string &trail) {
         trail = trail.substr(1);
         std::cout <<command.str.substr(command.str.size() - 1);
     } else if (c == KEY_UP && command.index > 0) {
-        history.push_back(command);
+        //Move up a command line from history
+        command.str += trail;
         trail = "";
+        save_command(command);
+        erase_line(command.str.size());
         command = history[command.index - 1];
+        std::cout << command.str;
+    } else if (c == KEY_DOWN && command.index < history.size() - 1) {
+        //Move down a command line from history
+        command.str += trail;
+        trail = "";
+        save_command(command);
+        erase_line(command.str.size());
+        command = history[command.index + 1];
         std::cout << command.str;
     }
 }
 
-void process_command(Command &command) {
-    history.push_back(command);
+void erase_line(int size) {
+    std::cout << "\r";
+    for (int i = 0; i < size + COMMAND_HEADER.size(); i++) std::cout << " ";
+    std::cout << "\r";
+    std::cout << COMMAND_HEADER;
+}
 
+void save_command(Command &command) {
+    if (command.index != history.size()) history.erase(history.begin() + command.index);
+    history.insert(history.begin() + command.index, command);
+}
+
+void save_new_command(Command &command) {
+    if (command.index != history.size() - 1) {
+        std::string temp = command.str;
+        command.str = command.command;
+        save_command(command);
+        command.index = history.size() - 1;
+        command.str = temp;
+    }
+    command.command = command.str;
+    save_command(command);
+}
+
+void process_command(Command &command) {
     if (command.str == "shutdown") {
         end();
-    } else if (command.str == "show history") {
+    } else if (command.str == "history") {
+        if (history[command.index - 1].command == "history") history.pop_back();
         print_command_history();
-    } else if (command.str == "restart") {
-        rebuild();
+    } else if (command.str == "reboot") {
+        reboot();
+    } else {
+        std::cout << error_message(command) << "\n";
     }
 }
 
+std::string error_message (Command &command) {
+    std::string error;
+    error += "error: ";
+    //Error messages
+    error += "Invalid command";
+
+    return error;
+}
+
 void print_command_history() {
-    for (int i = 0; i < history.size(); i++) {
-        std::cout << i+1 << ". " << history[i].str << "\n";
-    }
+    std::cout << "\n";
+    for (int i = 0; i < history.size(); i++)
+        std::cout << "\t" << i+1 << ".\t" << history[i].str << "\n";
+    std::cout << "\n";
 }
