@@ -127,6 +127,10 @@ void process_command(Command &command) {
         print_command_history();
     } else if (command.str == "reboot") {
         reboot();
+    } else if (command.str == "clear history") {
+        history.clear();
+    } else if (command.str.substr(0,6) == "print ") {
+        std::cout << command.str.substr(6) << "\n";
     } else {
         std::cout << error_message(command) << "\n";
     }
