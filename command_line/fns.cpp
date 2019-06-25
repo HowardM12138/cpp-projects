@@ -1,18 +1,37 @@
 #include "fns.h"
-#include "command_line.h"
-#include "../my_library/key_press.h"
+#include "class.h"
+#include "platform.h"
+
 #include <iostream>
-#include <istream>
 #include <vector>
 
-std::vector<Command> history;
-Command_Line_Status status = OFF;
-const std::string COMMAND_HEADER = "bingxu@bingxu-VirtualBox:~$ ";
+void process_command(Command &command) {
+    if (command.str == "shutdown") {
+        end();
+    } else if (command.str == "reboot") {
+        reboot();
+    } else if (command.str == "history") {
+        if (history[command.index - 1].command == "history") history.pop_back();
+        print_command_history();
+    } else if (command.str == "clear history") {
+        history.clear();
+    } else if (command.str.substr(0,6) == "print ") {
+        std::cout << command.str.substr(6) << "\n";
+    } else if (command.str.substr(0,4) == "g++ ") {
+        gcc(get_file_names_from_str(command.str.substr(4)));
+    } else if (command.str.substr(0,2) == "./") {
+        execute(get_file_names_from_str(command.str.substr(2)));
+    } else {
+        errors.push_back("Invalid command");
+    }
+    print_errors();
+    errors.clear();
+}
 
-void start() {
-    status = ON;
-    std::cout << "\nCommand line operating.\n\n";
-    user_input();
+//Functional methods
+void end() {
+    std::cout << "\nCommand line terminated.\n";
+    status = OFF;
 }
 
 void reboot() {
@@ -20,134 +39,66 @@ void reboot() {
     std::cout << "\nrebooting...\n\n";
 }
 
-void end() {
-    std::cout << "\nCommand line terminated.\n";
-    status = OFF;
-}
-
-void user_input() {
-    while (status == ON) {
-        //init variables to get user input
-        Command command = {"", "", history.size(), false};
-        std::string trail = "";
-        int c;
-
-        save_command(command);
-
-        std::cout << COMMAND_HEADER;
-
-        do {
-            c = get_key_pressed();
-            //process input charawcter
-            process_char_input(c, command, trail);
-            //Prints out trail string
-            if (trail.size() != 0) {
-                std::cout << trail;
-                for (int i = 0; i < trail.size(); i++) std::cout << "\b";
-            }
-        } while (c != KEY_ENTER);
-        //Save command and operate command
-        command.str += trail;
-        std::cout << "\n";
-        save_new_command(command);
-        process_command(command);
-    }
-}
-
-void process_char_input(int c, Command &command, std::string &trail) {
-    if (c <= ASCII_CHAR_RANGE) {
-        //Display key pressed onto the screen
-        char character = static_cast<char>(c);
-        command.str += character;
-        std::cout << character;
-    } else if (c == KEY_DEL && command.str.size () > 0) {
-        //Deletes a character on the current command line
-        std::cout << "\b";
-        for (int i = 0; i < trail.size()+1; i++) std::cout << " ";
-        for (int i = 0; i < trail.size()+1; i++) std::cout << "\b";
-        command.str = command.str.substr(0, command.str.size() - 1);
-    } else if (c == KEY_LEFT && command.str.size() > 0){
-        //Moves the insertion point one character to the Left
-        trail = command.str.substr(command.str.size()-1) + trail;
-        command.str = command.str.substr(0, command.str.size() - 1);
-        std::cout << "\b";
-    } else if (c == KEY_RIGHT && trail.size() > 0) {
-        //Moves the insertion point one character to the Right
-        command.str = command.str + trail.substr(0,1);
-        trail = trail.substr(1);
-        std::cout <<command.str.substr(command.str.size() - 1);
-    } else if (c == KEY_UP && command.index > 0) {
-        //Move up a command line from history
-        command.str += trail;
-        trail = "";
-        save_command(command);
-        erase_line(command.str.size());
-        command = history[command.index - 1];
-        std::cout << command.str;
-    } else if (c == KEY_DOWN && command.index < history.size() - 1) {
-        //Move down a command line from history
-        command.str += trail;
-        trail = "";
-        save_command(command);
-        erase_line(command.str.size());
-        command = history[command.index + 1];
-        std::cout << command.str;
-    }
-}
-
-void erase_line(int size) {
-    std::cout << "\r";
-    for (int i = 0; i < size + COMMAND_HEADER.size(); i++) std::cout << " ";
-    std::cout << "\r";
-    std::cout << COMMAND_HEADER;
-}
-
-void save_command(Command &command) {
-    if (command.index != history.size()) history.erase(history.begin() + command.index);
-    history.insert(history.begin() + command.index, command);
-}
-
-void save_new_command(Command &command) {
-    if (command.index != history.size() - 1) {
-        std::string temp = command.str;
-        command.str = command.command;
-        save_command(command);
-        command.index = history.size() - 1;
-        command.str = temp;
-    }
-    command.command = command.str;
-    save_command(command);
-}
-
-void process_command(Command &command) {
-    if (command.str == "shutdown") {
-        end();
-    } else if (command.str == "history") {
-        if (history[command.index - 1].command == "history") history.pop_back();
-        print_command_history();
-    } else if (command.str == "reboot") {
-        reboot();
-    } else if (command.str == "clear history") {
-        history.clear();
-    } else if (command.str.substr(0,6) == "print ") {
-        std::cout << command.str.substr(6) << "\n";
-    } else {
-        std::cout << error_message(command) << "\n";
-    }
-}
-
-std::string error_message (Command &command) {
-    std::string error;
-    error += "error: ";
-    //Error messages
-    error += "Invalid command";
-
-    return error;
-}
-
 void print_command_history() {
     std::cout << "\n";
     for (int i = 0; i < history.size(); i++)
         std::cout << "\t" << i+1 << ".\t" << history[i].str << "\n";
     std::cout << "\n";
+}
+
+void gcc(std::vector<std::string> files) {
+    if (files.size() == 0) return;
+    for (int i = 0; i < files.size(); i++) {
+        if (is_valid_file_name(files[i], ".cpp"))
+            std::cout << "compiled " << files[i] << "\n";
+        else
+            std::cout << "error: \"" << files[i] << "\" is not a valid file name\n";
+    }
+}
+
+void execute(std::vector<std::string> files) {
+    if (files.size() == 0) return;
+    std::string file = files[0];
+    if (is_valid_file_name(file, ".out"))
+        std::cout << "executed " << file << "\n";
+    else
+        std::cout << "error: \"" << file << "\" is not a valid file name\n";
+}
+
+void print_errors() {
+    for (int i = 0; i < errors.size(); i++) {
+        std::cout << "error: " << errors[i] << "\n";
+    }
+}
+
+
+//Helper functions
+std::vector<std::string> get_file_names_from_str(std::string str) {
+    std::vector<std::string> file_names;
+    str += " ";
+    while (str.find_first_of(' ') != std::string::npos) {
+        std::string file = str.substr(0, str.find_first_of(' '));
+        str = str.substr(str.find_first_of(' ') + 1);
+        file_names.push_back(file);
+    }
+    return file_names;
+}
+
+bool is_valid_file_name(std::string str, std::string extension) {
+    std::string file_name = str.substr(0, str.size() - extension.size());
+    std::string file_extension = str.substr(str.size() - extension.size());
+
+    for (int i = 0; i < file_name.size(); i++) {
+        char c = file_name[i];
+        if (!(c >= 48 && c <= 57 ||
+            c >= 65 && c <= 90 ||
+            c >= 97 && c <= 122 ||
+            c == 45 ||
+            c == 95 ||
+            c == 46)) return false;
+    }
+
+    if (file_extension != extension) return false;
+
+    return true;
 }

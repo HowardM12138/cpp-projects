@@ -1,5 +1,5 @@
-#ifndef COMMAND_LINE_H
-#define COMMAND_LINE_H
+#ifndef CLASS_H
+#define CLASS_H
 
 #include <string>
 
@@ -13,7 +13,6 @@ struct Command {
     std::string command;
     std::string str;
     int index;
-    bool is_valid;
 };
 
 #endif
