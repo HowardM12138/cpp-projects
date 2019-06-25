@@ -1,9 +1,14 @@
 #include "class.h"
 #include "platform.h"
+#include "fns.h"
 #include "../my_library/key_press.h"
 
 #include <iostream>
 #include <vector>
+
+const std::string COMMAND_HEADER = "C:\\WINDOWS\\system32>~$ ";
+Command_Line_Status status = OFF;
+std::vector<Command> history;
 
 void user_input() {
     while (status == ON) {

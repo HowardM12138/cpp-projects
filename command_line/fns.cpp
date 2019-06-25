@@ -1,9 +1,11 @@
-#include "fns.h"
 #include "class.h"
+#include "fns.h"
 #include "platform.h"
 
 #include <iostream>
 #include <vector>
+
+std::vector<std::string> errors;
 
 void process_command(Command &command) {
     if (command.str == "shutdown") {

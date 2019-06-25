@@ -2,10 +2,11 @@
 #define FNS_H
 
 #include "class.h"
+#include "platform.h"
 #include <iostream>
 #include <vector>
 
-std::vector<std::string> errors;
+extern std::vector<std::string> errors;
 
 void process_command(Command &command);
 void end();

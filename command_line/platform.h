@@ -5,9 +5,8 @@
 #include <iostream>
 #include <vector>
 
-std::vector<Command> history;
-const std::string COMMAND_HEADER = "C:\\WINDOWS\\system32>~$ ";
-Command_Line_Status status = OFF;
+extern std::vector<Command> history;
+extern Command_Line_Status status;
 
 void user_input();
 void process_char_input(int c, Command &command, std::string &trail);
