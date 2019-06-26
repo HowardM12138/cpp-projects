@@ -1,21 +1,8 @@
 #include "ls.h"
 
-#include <iostream>
-#include <unistd.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
-#include <time.h>
-#include <pwd.h>
-#include <grp.h>
-#include <iomanip>
-
 bool _a = false;
 bool _l = false;
 
-DIR *directory;
-char str_directory[4096];
 char file_path[4096];
 struct dirent *file;
 struct stat stats;

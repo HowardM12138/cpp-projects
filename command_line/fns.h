@@ -3,6 +3,7 @@
 
 #include "class.h"
 #include "platform.h"
+#include "ls.h"
 #include <iostream>
 #include <vector>
 

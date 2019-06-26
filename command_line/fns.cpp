@@ -1,10 +1,4 @@
-#include "class.h"
 #include "fns.h"
-#include "platform.h"
-#include "ls.h"
-
-#include <iostream>
-#include <vector>
 
 std::vector<std::string> errors;
 
@@ -14,11 +8,14 @@ void process_command(Command &command) {
     } else if (command.str == "reboot") {
         reboot();
     } else if (command.str == "history") {
-        if (history[command.index - 1].command == "history") history.pop_back();
+        if (history.size() > 1 && history[command.index - 1].command == "history")
+            history.pop_back();
         print_command_history();
     } else if (command.str.substr(0,2) == "ls"){
         std::string options = command.str.substr(2);
         ls(options);
+    } else if (command.str == "pwd") {
+        std::cout << getcwd(str_directory, 4096) << "\n";
     } else if (command.str.substr(0,6) == "print ") {
         std::cout << command.str.substr(6) << "\n";
     } else if (command.str.substr(0,4) == "g++ ") {
@@ -34,23 +31,20 @@ void process_command(Command &command) {
 
 //Functional methods
 void end() {
-    std::cout << "\nCommand line terminated.\n";
     status = OFF;
 }
 
 void reboot() {
     history.clear();
-    std::cout << "\nrebooting...\n\n";
+    std::cout << "\n\033[1;92mrebooting...\033[0m\n\n";
 }
 
 void print_command_history() {
     std::cout << "\n";
     for (int i = 0; i < history.size(); i++)
-        std::cout << "\t" << i+1 << ".\t" << history[i].str << "\n";
+        std::cout << std::setw(5) << i+1 << "  " << history[i].command << "\n";
     std::cout << "\n";
 }
-
-
 
 void gcc(std::vector<std::string> files) {
     if (files.size() == 0) return;

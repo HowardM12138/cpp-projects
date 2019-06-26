@@ -1,14 +1,12 @@
-#include "class.h"
 #include "platform.h"
-#include "fns.h"
 #include "../my_library/key_press.h"
-
-#include <iostream>
-#include <vector>
 
 const std::string COMMAND_HEADER = "\033[1;92mC:\\WINDOWS\\system32>\033[34m~$ \033[0m";
 Command_Line_Status status = OFF;
 std::vector<Command> history;
+
+DIR *directory;
+char str_directory[4096];
 
 void user_input() {
     while (status == ON) {
