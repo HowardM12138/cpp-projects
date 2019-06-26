@@ -99,11 +99,11 @@ void long_list_output() {
     strftime(date, 36, "%b %d %H:%M", localtime(&stats.st_mtime));
     std::cout << std::setw(12) << date << " ";
 
-    std::cout << file->d_name << "\n";
+    std::cout << "\033[1;92m" << file->d_name << "\033[0m\n";
 }
 
 void short_list_output() {
-    std::cout << file->d_name << "\n";
+    std::cout << "\033[1;92m" << file->d_name << "\033[0m\n";
 }
 
 void reset() {

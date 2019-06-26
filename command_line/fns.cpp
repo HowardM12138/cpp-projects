@@ -16,8 +16,6 @@ void process_command(Command &command) {
     } else if (command.str == "history") {
         if (history[command.index - 1].command == "history") history.pop_back();
         print_command_history();
-    } else if (command.str == "clear history") {
-        history.clear();
     } else if (command.str.substr(0,2) == "ls"){
         std::string options = command.str.substr(2);
         ls(options);
