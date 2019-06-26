@@ -12,6 +12,7 @@ void process_command(Command &command);
 void end();
 void reboot();
 void print_command_history();
+void ls (std::string option);
 void gcc(std::vector<std::string> files);
 void execute(std::vector<std::string> files);
 void print_errors();
