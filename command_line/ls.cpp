@@ -31,14 +31,9 @@ void ls(std::string options) {
             sprintf(file_path, "%s/%s", str_directory, file->d_name);
             stat(file_path, &stats);
 
-            if (!_a) {
-                if ((stats.st_mode & S_IFMT) != S_IFREG) continue;
-                if (_l) long_list_output();
-                else short_list_output();
-            } else {
-                if (_l) long_list_output();
-                else short_list_output();
-            }
+            if (!_a && (stats.st_mode & S_IFMT) != S_IFREG) continue;
+            if (_l) long_list_output();
+            else short_list_output();
         }
     } else std::cout << "error: Invalid command\n";
 
