@@ -5,7 +5,11 @@
 #include "platform.h"
 #include "ls.h"
 #include <iostream>
+#include <stdlib.h>
 #include <vector>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <cstring>
 
 extern std::vector<std::string> errors;
 
@@ -15,7 +19,7 @@ void reboot();
 void print_command_history();
 void ls (std::string option);
 void gcc(std::vector<std::string> files);
-void execute(std::vector<std::string> files);
+void execute(std::string str);
 void print_errors();
 std::vector<std::string> get_file_names_from_str(std::string str);
 bool is_valid_file_name(std::string str, std::string extension);

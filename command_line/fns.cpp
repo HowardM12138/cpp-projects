@@ -16,12 +16,12 @@ void process_command(Command &command) {
         ls(options);
     } else if (command.str == "pwd") {
         std::cout << getcwd(str_directory, 4096) << "\n";
-    } else if (command.str.substr(0,6) == "print ") {
-        std::cout << command.str.substr(6) << "\n";
+    } else if (command.str.substr(0,5) == "echo ") {
+        std::cout << command.str.substr(5) << "\n";
     } else if (command.str.substr(0,4) == "g++ ") {
         gcc(get_file_names_from_str(command.str.substr(4)));
-    } else if (command.str.substr(0,2) == "./") {
-        execute(get_file_names_from_str(command.str.substr(2)));
+    } else if (command.str[0] == '.' || command.str[0] == '/') {
+        execute(command.str);
     } else {
         errors.push_back("Invalid command");
     }
@@ -56,13 +56,23 @@ void gcc(std::vector<std::string> files) {
     }
 }
 
-void execute(std::vector<std::string> files) {
-    if (files.size() == 0) return;
-    std::string file = files[0];
-    if (is_valid_file_name(file, ".out"))
-        std::cout << "executed " << file << "\n";
-    else
-        std::cout << "error: \"" << file << "\" is not a valid file name\n";
+void execute(std::string str) {
+    pid_t pid = fork();
+
+    if (pid == -1) {
+        std::cout << "failed\n";
+    }
+    if (pid == 0) {
+        std::cout << "child processing\n";
+        if (execl(str.c_str(), "", NULL) == -1) {
+            std::cout << "error: The file doesn't exist\n";
+            exit(0);
+        }
+    }
+    if (pid > 0) {
+        wait(0);
+        std::cout << "parent processing\n";
+    }
 }
 
 void print_errors() {
