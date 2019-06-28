@@ -1,12 +1,21 @@
 #include "platform.h"
 #include "../my_library/key_press.h"
 
-const std::string COMMAND_HEADER = "\033[1;92mC:\\WINDOWS\\system32>\033[34m~$ \033[0m";
+std::string COMMAND_HEADER;
 Command_Line_Status status = OFF;
 std::vector<Command> history;
 
 DIR *directory;
 char str_directory[4096];
+
+void start() {
+    status = ON;
+    getcwd(str_directory, 4096);
+    directory = opendir(str_directory);
+    COMMAND_HEADER = "\033[1;92mbingxu:\033[1;34m";
+    COMMAND_HEADER += str_directory;
+    COMMAND_HEADER += "\033[0m~$ ";
+}
 
 void user_input() {
     while (status == ON) {

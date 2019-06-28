@@ -11,6 +11,19 @@ void process_command(Command &command) {
         if (history.size() > 1 && history[command.index - 1].command == "history")
             history.pop_back();
         print_command_history();
+    } else if (command.str.substr(0,3) == "cd "){
+        cd((command.str.substr(3)));
+    } else if (command.str.substr(0,6) == "mkdir ") {
+        if (mkdir(command.str.substr(6).c_str(), 0777) == -1)
+            std::cout << "error: Failed to make directory\n";
+    } else if (command.str.substr(0,6) == "rmdir ") {
+        if (rmdir(command.str.substr(6).c_str()) == -1)
+            std::cout << "error: Failed to remove directory\n";
+    } else if (command.str.substr(0,3) == "rm ") {
+        if (remove(command.str.substr(3).c_str()) == -1)
+            std::cerr << "Error :  " << std::strerror(errno) << std::endl; 
+    } else if (command.str.substr(0,6) == "touch ") {
+        touch(command.str.substr(6));
     } else if (command.str.substr(0,2) == "ls"){
         std::string options = command.str.substr(2);
         ls(options);
@@ -19,7 +32,7 @@ void process_command(Command &command) {
     } else if (command.str.substr(0,5) == "echo ") {
         std::cout << command.str.substr(5) << "\n";
     } else if (command.str.substr(0,4) == "g++ ") {
-        gcc(get_file_names_from_str(command.str.substr(4)));
+        gcc(command.str);
     } else if (command.str[0] == '.' || command.str[0] == '/') {
         execute(command.str);
     } else {
@@ -46,13 +59,34 @@ void print_command_history() {
     std::cout << "\n";
 }
 
-void gcc(std::vector<std::string> files) {
-    if (files.size() == 0) return;
-    for (int i = 0; i < files.size(); i++) {
-        if (is_valid_file_name(files[i], ".cpp"))
-            std::cout << "compiled " << files[i] << "\n";
-        else
-            std::cout << "error: \"" << files[i] << "\" is not a valid file name\n";
+void cd(std::string path) {
+    if (chdir(path.c_str()) != -1) {
+        getcwd(str_directory, 4096);
+        directory = opendir(str_directory);
+        COMMAND_HEADER = "\033[1;92mbingxu:\033[1;34m";
+        COMMAND_HEADER += str_directory;
+        COMMAND_HEADER += "\033[0m~$ ";
+    } else std::cout << "error: Invalid directory\n";
+}
+
+void touch(std::string file_name) {
+    std::fstream file;
+    file.open (file_name.c_str(), std::ios::out);
+    file.close();
+}
+
+void gcc(std::string str) {
+    pid_t pid = fork();
+
+    if (pid == -1) {
+        std::cout << "error: Forking failed\n";
+    }
+    if (pid == 0) {
+        system(str.c_str());
+        exit(0);
+    }
+    if (pid > 0) {
+        wait(0);
     }
 }
 
@@ -60,18 +94,16 @@ void execute(std::string str) {
     pid_t pid = fork();
 
     if (pid == -1) {
-        std::cout << "failed\n";
+        std::cout << "error: Forking failed\n";
     }
     if (pid == 0) {
-        std::cout << "child processing\n";
-        if (execl(str.c_str(), "", NULL) == -1) {
+        if (execlp(str.c_str(), "", NULL) == -1) {
             std::cout << "error: The file doesn't exist\n";
             exit(0);
         }
     }
     if (pid > 0) {
         wait(0);
-        std::cout << "parent processing\n";
     }
 }
 

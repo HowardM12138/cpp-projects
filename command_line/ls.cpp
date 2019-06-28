@@ -18,10 +18,15 @@ void ls(std::string options) {
             sprintf(file_path, "%s/%s", str_directory, file->d_name);
             stat(file_path, &stats);
 
-            if (!_a && (stats.st_mode & S_IFMT) != S_IFREG) continue;
-            if (_l) long_list_output();
-            else short_list_output();
+            if (!_a && file->d_name[0] == '.') continue;
+            if (_l) {
+                long_list_output();
+            }
+            else {
+                short_list_output();
+            };
         }
+        if (!_l) std::cout << "\n";
     } else std::cout << "error: Invalid command\n";
 
     reset();
@@ -72,25 +77,29 @@ void long_list_output() {
     std::cout << ((stats.st_mode & S_IWOTH) ? "w" : "-");
     std::cout << ((stats.st_mode & S_IXOTH) ? "x " : "- ");
 
-    std::cout << stats.st_nlink << " ";
+    std::cout << std::setw(2) <<stats.st_nlink << " ";
 
     user = getpwuid(stats.st_uid);
     std::cout << user->pw_name << " ";
 
     group = getgrgid(stats.st_gid);
-    std::cout << group->gr_name << " ";
+    std::cout << std::setw(6) << std::left << group->gr_name << " ";
 
-    std::cout << std::setw(5) <<stats.st_size << " ";
+    std::cout << std::setw(5) << std::right <<stats.st_size << " ";
 
     char date [36];
     strftime(date, 36, "%b %d %H:%M", localtime(&stats.st_mtime));
     std::cout << std::setw(12) << date << " ";
 
-    std::cout << "\033[1;92m" << file->d_name << "\033[0m\n";
+    if ((stats.st_mode & S_IFMT) == S_IFDIR) std::cout << "\033[1;34m";
+    else if ((stats.st_mode & S_IFMT) == S_IFREG) std::cout << "\033[1;92m";
+    std::cout << file->d_name << "\033[0m\n";
 }
 
 void short_list_output() {
-    std::cout << "\033[1;92m" << file->d_name << "\033[0m\n";
+    if ((stats.st_mode & S_IFMT) == S_IFDIR) std::cout << "\033[1;34m";
+    else if ((stats.st_mode & S_IFMT) == S_IFREG) std::cout << "\033[1;92m";
+    std::cout << file->d_name << "\033[0m  ";
 }
 
 void reset() {

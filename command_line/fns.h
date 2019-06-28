@@ -5,6 +5,8 @@
 #include "platform.h"
 #include "ls.h"
 #include <iostream>
+#include <bits/stdc++.h> 
+#include <fstream>
 #include <stdlib.h>
 #include <vector>
 #include <unistd.h>
@@ -17,8 +19,9 @@ void process_command(Command &command);
 void end();
 void reboot();
 void print_command_history();
-void ls (std::string option);
-void gcc(std::vector<std::string> files);
+void cd(std::string path);
+void touch(std::string file_name);
+void gcc(std::string str);
 void execute(std::string str);
 void print_errors();
 std::vector<std::string> get_file_names_from_str(std::string str);
