@@ -15,6 +15,8 @@ const int KEY_HOME = 190;
 const int KEY_END = 188;
 const int KEY_PAGE_UP = 171;
 const int KEY_PAGE_DOWN = 172;
+const int KEY_INSERT = 178;
+const int KEY_DELETE = 179;
 const int ASCII_CHAR_RANGE = 126;
 
 static struct termios old, New;
@@ -95,6 +97,12 @@ int get_key_pressed()
             case 54:
                 c = getch();
                 return KEY_PAGE_DOWN;
+            case 50:
+                c = getch();
+                return KEY_INSERT;
+            case 51:
+                c = getch();
+                return KEY_DELETE;
             default:
                 std::cout << "Error in arrow key section: " << c << "\n";
                 return -1;
@@ -105,7 +113,7 @@ int get_key_pressed()
         return KEY_TAB;
     } else if (c == 127){
         return KEY_DEL;
-    }else {
+    } else {
         return static_cast<int>(c);
     }
     return -1;
@@ -139,6 +147,10 @@ std::string get_key_pressed_str(int c) {
                 return "PAGE UP";
             case KEY_PAGE_DOWN:
                 return "PAGE DOWN";
+            case KEY_INSERT:
+                return "INSERT";
+            case KEY_DELETE:
+                return "DELETE";
             default:
                 return "Unrecognized key input.";
         }
