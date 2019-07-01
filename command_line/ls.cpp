@@ -54,7 +54,6 @@ bool get_option(std::string &options) {
 
 void long_list_output() {
 
-
     switch(stats.st_mode & S_IFMT) {
         case S_IFREG:
             std::cout << "-";
