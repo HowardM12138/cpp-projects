@@ -29,8 +29,8 @@ void user_input() {
             if (c == KEY_INSERT) {
                 insertion_mode = insertion_mode ? false : true;
             } else if (insertion_mode) {
+                std::cout << "\x1b[" << y << ";" << x << "H";
                 process_char_input(c, str, trail);
-
                 std::cout << trail;
                 std::cout << "\x1b[" << y << ";" << x << "H";
             }
@@ -40,18 +40,15 @@ void user_input() {
             exit(0);
         }
 
-        for (int i = 0; i < trail.size(); i++) {
-            if (trail[i] != '\n') std::cout << " ";
-            else std::cout << "\n";
-        }
+        erase_trail(trail);
+
         x = 1;
         ++y;
         std::cout << "\x1b[" << y << ";" << x << "H";
-
-        str += "\n";
-
         std::cout << trail;
         std::cout << "\x1b[" << y << ";" << x << "H";
+
+        str += "\n";
     }
 }
 
@@ -66,117 +63,78 @@ void process_char_input (int c, std::string &str, std::string &trail) {
         if (x == size_x+1) {
             x = 1;
             ++y;
-            str += "\n";
-            std::cout << "\n";
+            std::cout << "\x1b[" << y << ";" << x << "H";
         }
-    } else if (c == KEY_DEL) {
+    } else if (c == KEY_DEL && str.size() > 0) {
         //Deletes the last character
-        if (x != 1) {
-            str = str.substr(0, str.size() - 1);
-            --x;
+        erase_trail(trail);
+        if (x == 1){
+            move_cursor_back_a_line(str);
+        } else {
             std::cout << "\b";
-            for (int i = 0; i < trail.size() + 1; i++) std::cout << " ";
-            std::cout << "\x1b[" << y << ";" << x << "H";
-        } else if (y != 1){
-            str = str.substr(0, str.size() - 1);
-            int length;
-            if (y == 2) {
-                length = str.size();
-            }
-            if (y > 2) {
-                length = str.substr(str.find_last_of('\n') + 1).size();
-            }
-
-            x = length;
-            --y;
-
-            if (x != size_x) ++x;
-            std::cout << "\x1b[" << y << ";" << x << "H";
-            std::cout << " ";
-            std::cout << "\x1b[" << y << ";" << x << "H";
-
-            if (length == size_x) str = str.substr(0, str.size() - 1);
+            --x;
         }
-    } else if (c == KEY_LEFT){
+        std::cout << " \b";
+        str = str.substr(0, str.size() - 1);
+        std::cout << trail;
+        std::cout << "\x1b[" << y << ";" << x << "H";
+    } else if (c == KEY_LEFT && str.size() > 0) {
         //Moves the insertion point one character to the Left
-        if (x != 1) {
-            --x;
-            trail = str.substr(str.size() - 1) + trail;
-            str = str.substr(0, str.size() - 1);
+        if (x == 1) {
+            move_cursor_back_a_line(str);
+        } else {
             std::cout << "\b";
-        } else if (y != 1) {
-            trail = str.substr(str.size() - 1) + trail;
-            str = str.substr(0, str.size() - 1);
-
-            std::string temp = str.substr(0, str.size());
-            int length;
-            if (y == 2) {
-                length = temp.size();
-            }
-            if (y > 2) {
-                length = temp.substr(temp.find_last_of('\n') + 1).size();
-            }
-
-            x = length;
-            --y;
-
-            if (x != size_x) ++x;
-            else {
-                trail = str.substr(str.size() - 1) + trail;
-                str = str.substr(0, str.size() - 1);
-            }
-            std::cout << "\x1b[" << y << ";" << x << "H";
+            --x;
         }
-    } else if (c == KEY_RIGHT) {
+        trail = str.substr(str.size() - 1) + trail;
+        str = str.substr(0, str.size() - 1);
+    } else if (c == KEY_RIGHT && trail.size() > 0) {
         //Moves the insertion point one character to the Right
-        /*
-        str = str + trail.substr(0,1);
+        if (x == 80 || trail[0] == '\n') {
+            x = 1;
+            ++y;
+            std::cout << "\x1b[" << y << ";" << x << "H";
+        } else {
+            ++x;
+            std::cout << trail[0];
+        }
+        str += trail[0];
         trail = trail.substr(1);
-        std::cout << str.substr(str.size() - 1);
-        */
     } else if (c == KEY_UP && y > 0) {
-        //Move up a command line from history
-        /*
-        int i = str.size();
-        trail = str.substr(0, i) + trail;
-        int j = line_index;
-        line = lines[line_index - 1];
-        lines.erase(lines.begin() + j);
-        if (i < str.size()) {
-            trail = str.substr(i) + trail;
-        }
-        std::cout << "\x1b[A";
-
-        int i = str.size();
-        str += trail;
-        if (index != lines.size()) lines.erase(lines.begin() + index);
-        lines.insert(lines.begin() + index, str);
-        index = index - 1;
-        str = lines[index];
-        if (i < str.size()) {
-            trail = str.substr(i);
-            str = str.substr(0, i);
-        }
-        std::cout << "\x1b[A";
-        */
+        
     } else if (c == KEY_DOWN && y < 0) {
-        //Move down a command line from history
 
     } else if (c == KEY_HOME) {
-        /*
-        trail = str + trail;
-        for (int i = 0; i < str.size(); i++) std::cout << "\b";
-        str.clear();
-        */
+
     } else if (c == KEY_END) {
-        /*
-        std::cout << trail;
-        str = str + trail;
-        trail.clear();
-        */
+
     }
 }
 
-void move_cursor_up(std::string &str) {
+void move_cursor_back_a_line(std::string &str) {
+    std::string last_line = get_last_line(str);
+    int size = last_line.size();
+    if (size > size_x) {
+        size = size % size_x;
+    }
+    if (size == 0) size = size_x;
+    x = size;
+    --y;
+    std::cout << "\x1b[" << y << ";" << x << "H";
+}
 
+void erase_trail(std::string &trail) {
+    for (int i = 0; i < trail.size(); i++) {
+        if (trail[i] != '\n') std::cout << " ";
+        else std::cout << '\n';
+    }
+    std::cout << "\x1b[" << y << ";" << x << "H";
+}
+
+std::string get_last_line(std::string str) {
+    std::string temp = str;
+    if (str[str.size() - 1] == '\n') temp = temp.substr(0, str.size() - 1);
+    int index = -1;
+    if (temp.find_last_of('\n') != std::string::npos) index = temp.find_last_of('\n');
+    return str.substr(index + 1);
 }
