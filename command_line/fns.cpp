@@ -21,7 +21,7 @@ void process_command(Command &command) {
             std::cout << "error: Failed to remove directory\n";
     } else if (command.str.substr(0,3) == "rm ") {
         if (remove(command.str.substr(3).c_str()) == -1)
-            std::cerr << "Error :  " << std::strerror(errno) << std::endl; 
+            std::cerr << "Error :  " << std::strerror(errno) << std::endl;
     } else if (command.str.substr(0,6) == "touch ") {
         touch(command.str.substr(6));
     } else if (command.str.substr(0,2) == "ls"){
@@ -33,7 +33,7 @@ void process_command(Command &command) {
         std::cout << command.str.substr(5) << "\n";
     } else if (command.str.substr(0,4) == "g++ ") {
         gcc(command.str);
-    } else if (command.str[0] == '.' || command.str[0] == '/') {
+    } else if (command.str[0] == '.' && command.str[1] == '/') {
         execute(command.str);
     } else {
         errors.push_back("Invalid command");

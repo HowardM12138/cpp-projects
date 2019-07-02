@@ -2,16 +2,14 @@
 #define FNS_H
 
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
 #include <iostream>
 #include <vector>
 
-struct Line {
-    std::string str;
-    int index;
-};
-
 void user_input();
 void start();
-void process_char_input (int c, Line &line, std::string trail);
+void process_char_input (int c, std::string &str, std::string &trail);
+void move_cursor_up(std::string &str);
 
 #endif

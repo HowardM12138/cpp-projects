@@ -2,7 +2,11 @@
 
 int main() {
     std::string str = "this is str";
-    std::string trail = "this is trail\n";
-    trail += "this is what's after the trail";
-    std::cout << str + trail << "\n";
+    std::string trail = "";
+    for (int i = 0; i < 81; i++) {
+        trail += "a";
+    }
+    //trail += "this is what's after the trail";
+    std::cout << trail << "\n";
+    std::cout << trail.find("\n") << "\n";
 }
